@@ -31,3 +31,4 @@ RUN install -s cluster-proportional-autoscaler /usr/local/bin
 FROM scratch as autoscaler
 COPY --from=autoscaler-builder /usr/local/bin/cluster-proportional-autoscaler /cluster-proportional-autoscaler
 ENTRYPOINT ["/cluster-proportional-autoscaler"]
+
