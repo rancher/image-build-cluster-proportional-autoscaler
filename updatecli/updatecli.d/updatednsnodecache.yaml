@@ -1,0 +1,64 @@
+---
+name: "Update autoscaler version" 
+
+sources:
+ autoscaler:
+   name: Get autoscaler version
+   kind: githubrelease
+   spec:
+     owner: kubernetes-sigs
+     repository: cluster-proportional-autoscaler
+     token: '{{ requiredEnv .github.token }}'
+     typefilter:
+       release: true
+       draft: false
+       prerelease: false
+     versionfilter:
+       kind: latest
+
+targets:
+  dockerfile:
+    name: "Bump to latest autoscaler version in Dockerfile"
+    kind: dockerfile
+    scmid: default
+    sourceid: autoscaler
+    spec:
+      file: "Dockerfile"
+      instruction:
+        keyword: "ARG"
+        matcher: "TAG"
+
+  makefile:
+    name: "Bump to latest autoscaler version in Makefile"
+    kind: file
+    scmid: default
+    disablesourceinput: true
+    spec:
+      file: Makefile
+      matchpattern: '(?m)^TAG \?\= (.*)'
+      replacepattern: 'TAG ?= {{ source "autoscaler" }}$$(BUILD_META)'
+
+scms:
+  default:
+    kind: github
+    spec:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ requiredEnv .github.username }}'
+      user: '{{ .github.user }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+
+actions:
+    default:
+        title: 'Bump autoscaler version to {{ source "autoscaler" }}'
+        kind: github/pullrequest
+        spec:
+            automerge: false
+            labels:
+                - chore
+                - skip-changelog
+                - status/auto-created
+        scmid: default
+
