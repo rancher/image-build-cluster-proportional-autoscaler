@@ -14,7 +14,7 @@ BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler
 SRC ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler 
-TAG ?= v1.8.10$(BUILD_META)
+TAG ?= v1.8.9$(BUILD_META)
 export DOCKER_BUILDKIT?=1
 
 ifneq ($(DRONE_TAG),)
