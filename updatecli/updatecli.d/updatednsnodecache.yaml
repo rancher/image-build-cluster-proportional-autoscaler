@@ -4,17 +4,12 @@ name: "Update autoscaler version"
 sources:
  autoscaler:
    name: Get autoscaler version
-   kind: githubrelease
+   kind: gittag
+   scmid: upstream
    spec:
-     owner: kubernetes-sigs
-     repository: cluster-proportional-autoscaler
-     token: '{{ requiredEnv .github.token }}'
-     typefilter:
-       release: true
-       draft: false
-       prerelease: false
      versionfilter:
-       kind: latest
+       kind: regex
+       pattern: '^v\d+\.\d+\.\d+$'
 
 targets:
   dockerfile:
@@ -49,6 +44,14 @@ scms:
       owner: '{{ .github.owner }}'
       repository: '{{ .github.repository }}'
       branch: '{{ .github.branch }}'
+
+  upstream:
+    kind: github
+    spec:
+      owner: "kubernetes-sigs"
+      repository: "cluster-proportional-autoscaler"
+      branch: "master"
+      token: '{{ requiredEnv .github.token }}'
 
 actions:
     default:
