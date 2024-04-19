@@ -17,17 +17,14 @@ SRC ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler
 TAG ?= v1.8.11$(BUILD_META)
 export DOCKER_BUILDKIT?=1
 
-ifneq ($(DRONE_TAG),)
-	TAG := $(DRONE_TAG)
-endif
-
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
-	$(error TAG needs to end with build metadata: $(BUILD_META))
+$(error TAG $(TAG) needs to end with build metadata: $(BUILD_META))
 endif
 
 .PHONY: image-build
 image-build:
-	docker build \
+	docker buildx build \
+		--platform=$(ARCH) \
 		--pull \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
@@ -36,6 +33,7 @@ image-build:
 		--target autoscaler \
 		--tag $(ORG)/hardened-cluster-autoscaler:$(TAG) \
 		--tag $(ORG)/hardened-cluster-autoscaler:$(TAG)-$(ARCH) \
+		--load \
 	.
 
 .PHONY: image-push
@@ -53,3 +51,13 @@ image-manifest:
 .PHONY: image-scan
 image-scan:
 	trivy image --severity $(SEVERITIES) --no-progress --ignore-unfixed $(ORG)/hardened-cluster-autoscaler:$(TAG)
+
+.PHONY: log
+log:
+	@echo "ARCH=$(ARCH)"
+	@echo "TAG=$(TAG)"
+	@echo "ORG=$(ORG)"
+	@echo "PKG=$(PKG)"
+	@echo "SRC=$(SRC)"
+	@echo "BUILD_META=$(BUILD_META)"
+	@echo "UNAME_M=$(UNAME_M)"
