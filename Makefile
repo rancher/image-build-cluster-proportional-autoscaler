@@ -21,11 +21,11 @@ ifndef TARGET_PLATFORMS
 endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
-ORG ?= rancher
 PKG ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler
 SRC ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler 
 TAG ?= ${GITHUB_ACTION_TAG}
-IMAGE ?= $(ORG)/hardened-cluster-autoscaler:$(TAG)
+REPO ?= rancher
+IMAGE ?= $(REPO)/hardened-cluster-autoscaler:$(TAG)
 
 export DOCKER_BUILDKIT?=1
 
@@ -70,25 +70,24 @@ push-image:
 
 .PHONY: image-push
 image-push:
-	docker push $(ORG)/hardened-cluster-autoscaler:$(TAG)-$(ARCH)
+	docker push $(IMAGE)-$(ARCH)
 
 .PHONY: image-manifest
 image-manifest:
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create --amend \
-		$(ORG)/hardened-cluster-autoscaler:$(TAG) \
-		$(ORG)/hardened-cluster-autoscaler:$(TAG)-$(ARCH)
+		$(IMAGE) \
+		$(IMAGE)-$(ARCH)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
-		$(ORG)/hardened-cluster-autoscaler:$(TAG)
+		$(IMAGE)
 
 .PHONY: image-scan
 image-scan:
-	trivy image --severity $(SEVERITIES) --no-progress --ignore-unfixed $(ORG)/hardened-cluster-autoscaler:$(TAG)
+	trivy image --severity $(SEVERITIES) --no-progress --ignore-unfixed $(IMAGE)
 
 .PHONY: log
 log:
 	@echo "ARCH=$(ARCH)"
 	@echo "TAG=$(TAG:$(BUILD_META)=)"
-	@echo "ORG=$(ORG)"
 	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
 	@echo "BUILD_META=$(BUILD_META)"
