@@ -19,7 +19,7 @@ FROM base-builder as autoscaler-builder
 ARG SRC=github.com/kubernetes-sigs/cluster-proportional-autoscaler
 ARG PKG=github.com/kubernetes-sigs/cluster-proportional-autoscaler
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
-ARG TAG=v1.8.11
+ARG TAG=v1.9.0
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
