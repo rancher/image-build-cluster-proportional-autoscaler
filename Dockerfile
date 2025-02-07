@@ -16,7 +16,7 @@ RUN set -x && \
 
 # setup the autoscaler build
 FROM base-builder as autoscaler-builder
-ARG SRC=github.com/kubernetes-sigs/cluster-proportional-autoscaler
+ARG SRC=github.com/rancher/release-cluster-proportional-autoscaler
 ARG PKG=github.com/kubernetes-sigs/cluster-proportional-autoscaler
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 ARG TAG=v1.9.0

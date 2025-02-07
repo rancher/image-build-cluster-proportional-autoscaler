@@ -22,7 +22,7 @@ endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
 PKG ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler
-SRC ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler 
+SRC ?= github.com/rancher/release-cluster-proportional-autoscaler 
 TAG ?= ${GITHUB_ACTION_TAG}
 REPO ?= rancher
 IMAGE ?= $(REPO)/hardened-cluster-autoscaler:$(TAG)
