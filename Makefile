@@ -56,8 +56,7 @@ image-build:
 push-image:
 	docker buildx build \
 		$(IID_FILE_FLAG) \
-		--sbom=true \
-		--attest type=provenance,mode=max \
+		$(BUILDX_ARGS) \
 		--platform=$(TARGET_PLATFORMS) \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
@@ -67,6 +66,11 @@ push-image:
 		--tag $(IMAGE)-$(ARCH) \
 		--push \
 		.
+
+.PHONY: push-prime-image
+push-prime-image:
+	BUILDX_ARGS="--sbom=true --attest type=provenance,mode=max" \
+	$(MAKE) push-image
 
 .PHONY: image-push
 image-push:
