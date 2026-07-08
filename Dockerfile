@@ -28,6 +28,8 @@ ARG TARGETPLATFORM
 RUN set -x && \
     xx-apk add musl-dev gcc  lld 
 
+COPY go-mod-overrides ./go-mod-overrides
+RUN go-mod-overrides.sh ./go-mod-overrides
 RUN xx-go --wrap &&\
     GOARCH=${ARCH} GO_LDFLAGS="-linkmode=external -X ${PKG}/pkg/version.VERSION=${TAG}" \
     go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o . ./...
