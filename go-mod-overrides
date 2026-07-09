@@ -1,3 +1,6 @@
 # golang.org/x/net: CVE-2026-33814 (net/http2 DoS), CVE-2026-39821 (x/net/idna punycode).
 # Drop once upstream requires golang.org/x/net >= v0.55.0.
 -replace golang.org/x/net=golang.org/x/net@v0.55.0
+# golang.org/x/oauth2: CVE-2025-22868 (golang.org/x/oauth2/jws unexpected memory consumption during token parsing).
+# Drop once upstream requires golang.org/x/oauth2 >= v0.27.0.
+-replace golang.org/x/oauth2=golang.org/x/oauth2@v0.27.0
