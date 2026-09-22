@@ -1,15 +1,6 @@
 SEVERITIES = HIGH,CRITICAL
 
 UNAME_M = $(shell uname -m)
-ARCH=
-ifeq ($(UNAME_M), x86_64)
-	ARCH=amd64
-else ifeq ($(UNAME_M), aarch64)
-	ARCH=arm64
-else 
-	ARCH=$(UNAME_M)
-endif
-
 ifndef TARGET_PLATFORMS
 	ifeq ($(UNAME_M), x86_64)
 		TARGET_PLATFORMS:=linux/amd64
@@ -21,8 +12,6 @@ ifndef TARGET_PLATFORMS
 endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
-PKG ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler
-SRC ?= github.com/kubernetes-sigs/cluster-proportional-autoscaler 
 TAG ?= ${GITHUB_ACTION_TAG}
 REPO ?= rancher
 IMAGE ?= $(REPO)/hardened-cluster-autoscaler:$(TAG)
@@ -40,15 +29,10 @@ endif
 .PHONY: image-build
 image-build:
 	docker buildx build \
-		--platform=$(ARCH) \
-		--pull \
-		--build-arg PKG=$(PKG) \
-		--build-arg SRC=$(SRC) \
+		--platform=$(TARGET_PLATFORMS) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
-		--build-arg ARCH=$(ARCH) \
 		--target autoscaler \
 		--tag $(IMAGE) \
-		--tag $(IMAGE)-$(ARCH) \
 		--load \
 	.
 
@@ -58,12 +42,8 @@ push-image:
 		$(IID_FILE_FLAG) \
 		$(BUILDX_ARGS) \
 		--platform=$(TARGET_PLATFORMS) \
-		--build-arg PKG=$(PKG) \
-		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
-		--build-arg ARCH=$(ARCH) \
 		--tag $(IMAGE) \
-		--tag $(IMAGE)-$(ARCH) \
 		--push \
 		.
 
@@ -74,13 +54,12 @@ push-prime-image:
 
 .PHONY: image-push
 image-push:
-	docker push $(IMAGE)-$(ARCH)
+	docker push $(IMAGE)
 
 .PHONY: image-manifest
 image-manifest:
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create --amend \
 		$(IMAGE) \
-		$(IMAGE)-$(ARCH)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
 		$(IMAGE)
 
@@ -90,9 +69,8 @@ image-scan:
 
 .PHONY: log
 log:
-	@echo "ARCH=$(ARCH)"
+	@echo "TARGET_PLATFORMS=$(TARGET_PLATFORMS)"
 	@echo "TAG=$(TAG:$(BUILD_META)=)"
-	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
 	@echo "BUILD_META=$(BUILD_META)"
 	@echo "UNAME_M=$(UNAME_M)"
