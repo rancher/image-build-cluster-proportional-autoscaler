@@ -12,26 +12,15 @@ sources:
        pattern: '^v\d+\.\d+\.\d+$'
 
 targets:
-  dockerfile:
-    name: "Bump to latest autoscaler version in Dockerfile"
-    kind: dockerfile
-    scmid: default
-    sourceid: autoscaler
-    spec:
-      file: "Dockerfile"
-      instruction:
-        keyword: "ARG"
-        matcher: "TAG"
-
-  makefile:
-    name: "Bump to latest autoscaler version in Makefile"
+  tagfile:
+    name: "Bump to latest autoscaler version in TAG"
     kind: file
     scmid: default
     disablesourceinput: true
     spec:
-      file: Makefile
-      matchpattern: '(?m)^TAG \:\= (.*)'
-      replacepattern: 'TAG := {{ source "autoscaler" }}$$(BUILD_META)'
+      file: TAG
+      matchpattern: '(?m)^(.+)$'
+      replacepattern: '{{ source "autoscaler" }}'
 
 scms:
   default:

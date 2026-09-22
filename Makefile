@@ -19,7 +19,7 @@ IMAGE ?= $(REPO)/hardened-cluster-autoscaler:$(TAG)
 export DOCKER_BUILDKIT?=1
 
 ifeq ($(TAG),)
-TAG := v1.10.3$(BUILD_META)
+TAG := $(shell cat TAG)$(BUILD_META)
 endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
